@@ -1,7 +1,7 @@
 #include "EasyCommII.h"
 
-#define AZ_DEG_PER_STEP 43 // (deg*100)
-#define EL_DEG_PER_STEP 6  // (deg*100)
+#define AZ_DEG_PER_STEP ((360.0*10.0/43.0*0.9/360.0/16.0)*100.0) // (deg*100)
+#define EL_DEG_PER_STEP ((360.0*1.0/30.0*1.8/360.0/8.0)*100.0) // (deg*100)
 
 EasyCommII::EasyCommII(AccelStepper& azStepper, AccelStepper& elStepper, BluetoothSerial& serialBT, int azEnablePin, int elEnablePin)
     : azStepper(azStepper), elStepper(elStepper), serialBT(serialBT), azEnablePin(azEnablePin), elEnablePin(elEnablePin) {}
@@ -68,8 +68,8 @@ void EasyCommII::setPos(float az, float el) {
     elStepper.setMaxSpeed(1000); // Set maximum speed for elStepper
     elStepper.setAcceleration(500); // Set acceleration for elStepper
 
-    long azSteps = az * 100 / AZ_DEG_PER_STEP;
-    long elSteps = el * 100 / EL_DEG_PER_STEP;
+    long azSteps = long(az * 100.0 / AZ_DEG_PER_STEP);
+    long elSteps = long(el * 100.0 / EL_DEG_PER_STEP);
     azStepper.moveTo(azSteps);
     elStepper.moveTo(elSteps);
 
