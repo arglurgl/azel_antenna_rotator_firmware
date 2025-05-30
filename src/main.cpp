@@ -23,6 +23,8 @@ void setup() {
         Serial.println("Bluetooth initialized");
     }
     
+    azStepper.setPinsInverted(true, true, true);
+    elStepper.setPinsInverted(true, true, true);
     azStepper.setEnablePin(AZ_ENABLE_PIN);
     elStepper.setEnablePin(EL_ENABLE_PIN);
     pinMode(AZ_ENABLE_PIN, OUTPUT);
