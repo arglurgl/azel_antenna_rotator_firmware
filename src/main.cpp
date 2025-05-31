@@ -29,8 +29,8 @@ void setup() {
     elStepper.setEnablePin(EL_ENABLE_PIN);
     pinMode(AZ_ENABLE_PIN, OUTPUT);
     pinMode(EL_ENABLE_PIN, OUTPUT);
-    azStepper.enableOutputs();
-    elStepper.enableOutputs();
+    azStepper.disableOutputs();
+    elStepper.disableOutputs();
     
     azStepper.setMaxSpeed(1000); // Set maximum speed for azStepper
     azStepper.setAcceleration(500); // Set acceleration for azStepper

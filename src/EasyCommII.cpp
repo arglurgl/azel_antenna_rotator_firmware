@@ -106,13 +106,13 @@ void EasyCommII::stop() {
 }
 
 void EasyCommII::enableMotors() {
-    digitalWrite(azEnablePin, LOW); // Assuming LOW enables the motor drivers
-    digitalWrite(elEnablePin, LOW);
+    azStepper.enableOutputs();
+    elStepper.enableOutputs();
     Serial.println("Motors enabled.");
 }
 
 void EasyCommII::disableMotors() {
-    digitalWrite(azEnablePin, HIGH); // Assuming HIGH disables the motor drivers
-    digitalWrite(elEnablePin, HIGH);
+    azStepper.disableOutputs();
+    elStepper.disableOutputs();
     Serial.println("Motors disabled.");
 }
