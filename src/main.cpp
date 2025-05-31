@@ -69,7 +69,7 @@ bool home_elevation(){
     while (!digitalRead(EL_HOME_PIN)){
         elStepper.run();
     }
-    elStepper.stop(); // stop, with decelaration, so will actually overrun a bit
+    elStepper.setCurrentPosition(0); //sets position and immediately stops motor
     elStepper.setMaxSpeed(SPEED);
     return true;
 }
