@@ -20,7 +20,8 @@ void EasyCommII::parseCommand(const String& command) {
         int secondSpace = trimmedCommand.indexOf(' ', firstSpace + 1);
         
         if (firstSpace == -1 || secondSpace == -1) {
-            serialBT.println("ERR Invalid Command Format");
+            serialBT.print("ERR Invalid Command Format\n");
+            serialBT.flush();
             return;
         }
 
@@ -43,7 +44,8 @@ void EasyCommII::parseCommand(const String& command) {
         // Format: AZ0.0 EL0.0
         int elIndex = trimmedCommand.indexOf(" EL");
         if (elIndex == -1) {
-            serialBT.println("ERR Invalid Command Format");
+            serialBT.print("ERR Invalid Command Format\n");
+            serialBT.flush();
             return;
         }
 
@@ -56,7 +58,8 @@ void EasyCommII::parseCommand(const String& command) {
         setPos(az, el);
     } else {
         Serial.println("Unknown command received.");
-        serialBT.println("ERR Unknown Command");
+        serialBT.print("ERR Unknown Command\n");
+        serialBT.flush();
     }
 }
 
@@ -78,7 +81,7 @@ void EasyCommII::setPos(float az, float el) {
     Serial.print(", EL steps: ");
     Serial.println(elSteps);
 
-    serialBT.println("OK");
+    //serialBT.print("OK\n"); //removed, as rotctld does not expect this and is confused by it
 }
 
 void EasyCommII::getPos() {
@@ -93,16 +96,18 @@ void EasyCommII::getPos() {
     serialBT.print("AZ ");
     serialBT.print(az, 2);
     serialBT.print(" EL ");
-    serialBT.println(el, 2);
+    serialBT.print(el, 2);
+    serialBT.print("\n");
+    serialBT.flush();
 }
 
 void EasyCommII::stop() {
     azStepper.stop();
     elStepper.stop();
-    disableMotors();
+    disableMotors(); //TODO: this seems to loose position count on gpredict disengage/engage
 
     Serial.println("Motors stopped.");
-    serialBT.println("OK");
+    //serialBT.print("OK\n"); //removed, as rotctld does not expect this and is confused by it
 }
 
 void EasyCommII::enableMotors() {

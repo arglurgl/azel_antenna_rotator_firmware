@@ -16,6 +16,8 @@
 #define HOMING_SPEED 500
 #define ACCELERATION 500
 
+#define BT_SERIAL_TIMEOUT 100
+
 BluetoothSerial SerialBT;
 AccelStepper azStepper(AccelStepper::DRIVER, AZ_STEP_PIN, AZ_DIR_PIN);
 AccelStepper elStepper(AccelStepper::DRIVER, EL_STEP_PIN, EL_DIR_PIN);
@@ -53,6 +55,8 @@ void setup() {
     };
     Serial.println("Homing done");
 
+    SerialBT.setTimeout(BT_SERIAL_TIMEOUT);
+
     Serial.println("The device started, now you can pair it with bluetooth!");
 }
 
@@ -76,7 +80,7 @@ bool home_elevation(){
 
 void loop() {
     if (SerialBT.available()) {
-        String command = SerialBT.readStringUntil('\n');
+        String command = SerialBT.readStringUntil('\n');  //TODO: use non-blocking approach
         Serial.print("Received command: ");
         Serial.println(command);
         easycomm.parseCommand(command);
