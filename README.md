@@ -8,7 +8,8 @@ I use it with this antenna rotator: https://www.thingiverse.com/thing:4664558/
 * Bind/open Bluetooth serial:
   * ```rfcomm bind /dev/rfcomm0 xx:xx:xx:xx:xx:xx 1```(Replace xx... with the device's MAC address, find it via Bluetooth scan.)
 * Start rotctld (accepts TCP commands, controls rotator via Bluetooth serial): 
-  * ```rotctld -m 202 -r /dev/rfcomm0 -s 9600  -C timeout=200 -vvvvv```
+  * ```rotctld -m 202 -r /dev/rfcomm0 -s 9600  -C timeout=1000 -vvvvv```
+  *(original timeout of 200 was too short on my setup)
 * Start gpredict, add antenna rotator:
   *   Edit -> Preferences -> Interfaces -> Rotator Tab -> Add New
   *   Enter Name, click OK
