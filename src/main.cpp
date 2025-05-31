@@ -8,12 +8,20 @@
 #define EL_STEP_PIN 26
 #define EL_DIR_PIN 25
 #define EL_ENABLE_PIN 14
-#define EL_HOME_PIN_ANL 18 // Update as needed
+#define EL_HOME_PIN 23 // Update as needed
+
+#define EL_HOMING_BACKOFF_STEPS 1000//how many steps to move away from homing switch
+#define EL_HOMING_FORWARD_MAXMOVE 100000 //how many steps to move towards homing switch before giving up
+#define SPEED 1000
+#define HOMING_SPEED 500
+#define ACCELERATION 500
 
 BluetoothSerial SerialBT;
 AccelStepper azStepper(AccelStepper::DRIVER, AZ_STEP_PIN, AZ_DIR_PIN);
 AccelStepper elStepper(AccelStepper::DRIVER, EL_STEP_PIN, EL_DIR_PIN);
 EasyCommII easycomm(azStepper, elStepper, SerialBT, AZ_ENABLE_PIN, EL_ENABLE_PIN);
+
+bool home_elevation();
 
 void setup() {
     Serial.begin(115200);
@@ -24,20 +32,46 @@ void setup() {
     }
     
     azStepper.setPinsInverted(true, true, true);
-    elStepper.setPinsInverted(true, true, true);
+    elStepper.setPinsInverted(false, true, true);
     azStepper.setEnablePin(AZ_ENABLE_PIN);
     elStepper.setEnablePin(EL_ENABLE_PIN);
     pinMode(AZ_ENABLE_PIN, OUTPUT);
     pinMode(EL_ENABLE_PIN, OUTPUT);
     azStepper.disableOutputs();
     elStepper.disableOutputs();
+    pinMode(EL_HOME_PIN, INPUT_PULLUP);
     
-    azStepper.setMaxSpeed(1000); // Set maximum speed for azStepper
-    azStepper.setAcceleration(500); // Set acceleration for azStepper
-    elStepper.setMaxSpeed(1000); // Set maximum speed for elStepper
-    elStepper.setAcceleration(500); // Set acceleration for elStepper
+    azStepper.setMaxSpeed(SPEED); // Set maximum speed for azStepper
+    azStepper.setAcceleration(ACCELERATION); // Set acceleration for azStepper
+    elStepper.setMaxSpeed(SPEED); // Set maximum speed for elStepper
+    elStepper.setAcceleration(ACCELERATION); // Set acceleration for elStepper
     
+    Serial.println("Homing elevation");
+    if (!home_elevation()){
+        Serial.println("Error homing elevation, will not continue");
+        while(1){};
+    };
+    Serial.println("Homing done");
+
     Serial.println("The device started, now you can pair it with bluetooth!");
+}
+
+bool home_elevation(){
+    elStepper.enableOutputs();
+    elStepper.move(EL_HOMING_BACKOFF_STEPS);
+    elStepper.runToPosition();   
+    if (digitalRead(EL_HOME_PIN)){
+        Serial.println("Error: EL home switch did not release. Check wiring.");
+        return false;
+    }
+    elStepper.setMaxSpeed(HOMING_SPEED);
+    elStepper.move(EL_HOMING_FORWARD_MAXMOVE*-1);
+    while (!digitalRead(EL_HOME_PIN)){
+        elStepper.run();
+    }
+    elStepper.stop(); // stop, with decelaration, so will actually overrun a bit
+    elStepper.setMaxSpeed(SPEED);
+    return true;
 }
 
 void loop() {
