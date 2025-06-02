@@ -22,6 +22,8 @@ BluetoothSerial SerialBT;
 AccelStepper azStepper(AccelStepper::DRIVER, AZ_STEP_PIN, AZ_DIR_PIN);
 AccelStepper elStepper(AccelStepper::DRIVER, EL_STEP_PIN, EL_DIR_PIN);
 EasyCommII easycomm(azStepper, elStepper, SerialBT, AZ_ENABLE_PIN, EL_ENABLE_PIN);
+String command_buffer = "";
+char input_char;
 
 bool home_elevation();
 
@@ -57,7 +59,7 @@ void setup() {
 
     SerialBT.setTimeout(BT_SERIAL_TIMEOUT);
 
-    Serial.println("The device started, now you can pair it with bluetooth!");
+    Serial.println("Device setup done. You can pair the device now.");
 }
 
 bool home_elevation(){
@@ -79,13 +81,17 @@ bool home_elevation(){
 }
 
 void loop() {
-    if (SerialBT.available()) {
-        String command = SerialBT.readStringUntil('\n');  //TODO: use non-blocking approach
-        Serial.print("Received command: ");
-        Serial.println(command);
-        easycomm.parseCommand(command);
+    if (SerialBT.available()) { // if there is data available
+        input_char = SerialBT.read();  //read a single byte. this allows to execute run() between bytes
+        command_buffer += input_char;  // append it
+        if (input_char == '\n'){ // if it was end of a command
+            Serial.print("Received command: ");
+            Serial.println(command_buffer);
+            easycomm.parseCommand(command_buffer); // execute it
+            command_buffer = "";            //clear buffer for next command
+            Serial.println("Done handling command");
+        }
     }
-
     azStepper.run();
     elStepper.run();
 }

@@ -21,7 +21,6 @@ void EasyCommII::parseCommand(const String& command) {
         
         if (firstSpace == -1 || secondSpace == -1) {
             serialBT.print("ERR Invalid Command Format\n");
-            serialBT.flush();
             return;
         }
 
@@ -45,7 +44,6 @@ void EasyCommII::parseCommand(const String& command) {
         int elIndex = trimmedCommand.indexOf(" EL");
         if (elIndex == -1) {
             serialBT.print("ERR Invalid Command Format\n");
-            serialBT.flush();
             return;
         }
 
@@ -59,7 +57,6 @@ void EasyCommII::parseCommand(const String& command) {
     } else {
         Serial.println("Unknown command received.");
         serialBT.print("ERR Unknown Command\n");
-        serialBT.flush();
     }
 }
 
@@ -98,7 +95,6 @@ void EasyCommII::getPos() {
     serialBT.print(" EL ");
     serialBT.print(el, 2);
     serialBT.print("\n");
-    serialBT.flush();
 }
 
 void EasyCommII::stop() {
